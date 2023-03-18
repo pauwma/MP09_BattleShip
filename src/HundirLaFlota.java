@@ -15,7 +15,6 @@ public class HundirLaFlota {
         }
 
         colocarBarcos(tablero);
-
     }
 
     public static void colocarBarcos(int[][] matriz) {
@@ -79,6 +78,9 @@ public class HundirLaFlota {
                 }
             }
         }
+
+        Tablero.mostrarMatriz(matriz);
+        System.out.println("Tablero final.");
     }
 
     private static boolean esValido(int[][] matriz, int longitud, int fila, int columna, String orientacion) {

@@ -3,7 +3,6 @@ public interface Tablero {
         String[] letras = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
         String[] simbolos = {"   ", " ░ ", " █ "};
 
-        System.out.println("                   JUGADOR 1                ");
         System.out.println("   ┏━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┓");
 
         for (int i = 0; i < 10; i++) {
