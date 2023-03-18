@@ -1,82 +1,117 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class HundirLaFlota {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        char[][] tablero = new char[10][10];
+        Tablero.mostrarIntro();
+        int[][] tablero = new int[10][10];
 
         // Inicializar tablero
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
-                tablero[i][j] = '-';
+                tablero[i][j] = 0;
             }
         }
 
-        // Pedir al usuario los barcos
-        int[] barcos = {5, 4, 4, 3, 3, 3, 2, 2, 2, 2};
-        for (int i = 0; i < barcos.length; i++) {
-            int longitud = barcos[i];
-            System.out.println("Introduce la posición del barco de longitud " + longitud + ":");
-            System.out.print("Fila: ");
-            int fila = input.nextInt();
-            System.out.print("Columna: ");
-            int columna = input.nextInt();
-            System.out.print("Orientación (H para horizontal, V para vertical): ");
-            char orientacion = input.next().charAt(0);
+        colocarBarcos(tablero);
 
-            // Colocar el barco en el tablero
-            boolean barcoColocado = false;
-            while (!barcoColocado) {
-                if (orientacion == 'H') {
-                    if (columna + longitud <= tablero.length) {
-                        barcoColocado = true;
-                        for (int j = columna; j < columna + longitud; j++) {
-                            if (tablero[fila][j] != '-') {
-                                barcoColocado = false;
-                                System.out.println("No se puede colocar aquí, hay otro barco.");
-                                break;
-                            }
-                        }
-                        if (barcoColocado) {
-                            for (int j = columna; j < columna + longitud; j++) {
-                                tablero[fila][j] = 'B';
-                            }
-                        }
+    }
+
+    public static void colocarBarcos(int[][] matriz) {
+        Scanner scanner = new Scanner(System.in);
+        int[] barcos = {5, 4, 3, 3, 2, 2};
+        String[] orientaciones = {"horizontal", "vertical"};
+
+        for (int i = 0; i < barcos.length; i++) {
+            boolean colocado = false;
+            while (!colocado) {
+                Tablero.mostrarMatriz(matriz);
+                System.out.println("\nColoca tu barco de longitud " + barcos[i]);
+
+                int fila = -1;
+                while (fila == -1) {
+                    System.out.print("Fila (A-J): ");
+                    String filaLetra = scanner.next().toUpperCase();
+                    if (filaLetra.length() == 1 && filaLetra.charAt(0) >= 'A' && filaLetra.charAt(0) <= 'J') {
+                        fila = filaLetra.charAt(0) - 'A';
                     } else {
-                        System.out.println("No se puede colocar aquí, el barco se sale del tablero.");
-                        break;
+                        System.out.println("ERROR - Entrada no válida. Usa una letra entre A y J.");
                     }
-                } else if (orientacion == 'V') {
-                    if (fila + longitud <= tablero.length) {
-                        barcoColocado = true;
-                        for (int j = fila; j < fila + longitud; j++) {
-                            if (tablero[j][columna] != '-') {
-                                barcoColocado = false;
-                                System.out.println("No se puede colocar aquí, hay otro barco.");
-                                break;
-                            }
+                }
+
+                int columna = -1;
+                while (columna == -1) {
+                    System.out.print("Columna (0-9): ");
+                    try {
+                        columna = scanner.nextInt();
+                        if (columna < 0 || columna > 9) {
+                            System.out.println("ERROR - Entrada no válida. Usa un número entre 0 y 9.");
+                            columna = -1;
                         }
-                        if (barcoColocado) {
-                            for (int j = fila; j < fila + longitud; j++) {
-                                tablero[j][columna] = 'B';
-                            }
-                        }
-                    } else {
-                        System.out.println("No se puede colocar aquí, el barco se sale del tablero.");
-                        break;
+                    } catch (InputMismatchException e) {
+                        System.out.println("ERROR - Entrada no válida. Usa un número entre 0 y 9.");
+                        scanner.next();
                     }
+                }
+
+                System.out.println("Orientación: (1-Horizontal  /  2-Vertical)");
+                int opcion = -1;
+                while (opcion < 1 || opcion > 2) {
+                    System.out.print("Elige una opción (1-2): ");
+                    try {
+                        opcion = scanner.nextInt();
+                        if (opcion < 1 || opcion > 2) {
+                            System.out.println("ERROR - Entrada no válida. Elige 1 para horizontal o 2 para vertical.");
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("ERROR - Entrada no válida. Elige 1 para horizontal o 2 para vertical.");
+                        scanner.next();
+                    }
+                }
+                String orientacion = orientaciones[opcion - 1];
+
+                if (esValido(matriz, barcos[i], fila, columna, orientacion)) {
+                    colocarBarco(matriz, barcos[i], fila, columna, orientacion);
+                    colocado = true;
                 } else {
-                    System.out.println("Orientación incorrecta, introduce H o V.");
-                    break;
+                    System.out.println("ERROR - Posición no válida. Intenta de nuevo.");
                 }
             }
+        }
+    }
 
-            // Mostrar tablero
-            for (int j = 0; j < tablero.length; j++) {
-                for (int k = 0; k < tablero[j].length; k++) {
-                    System.out.print(tablero[j][k] + " ");
+    private static boolean esValido(int[][] matriz, int longitud, int fila, int columna, String orientacion) {
+        if (orientacion.equals("horizontal")) {
+            if (columna + longitud > 10) {
+                return false;
+            }
+            for (int i = 0; i < longitud; i++) {
+                if (matriz[fila][columna + i] != 0) {
+                    return false;
                 }
-                System.out.println();
+            }
+        } else {
+            if (fila + longitud > 10) {
+                return false;
+            }
+            for (int i = 0; i < longitud; i++) {
+                if (matriz[fila + i][columna] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static void colocarBarco(int[][] matriz, int longitud, int fila, int columna, String orientacion) {
+        if (orientacion.equals("horizontal")) {
+            for (int i = 0; i < longitud; i++) {
+                matriz[fila][columna + i] = 2;
+            }
+        } else {
+            for (int i = 0; i < longitud; i++) {
+                matriz[fila + i][columna] = 2;
             }
         }
     }
