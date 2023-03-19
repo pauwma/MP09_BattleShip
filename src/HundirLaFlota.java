@@ -2,19 +2,14 @@ import java.util.Scanner;
 
 public class HundirLaFlota {
 
-    public void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        Tablero.mostrarIntro();
-        Tablero tablero = new Tablero();
-        menuInicial();
-
-
+    public static void main(String[] args) {
+        tutorial();
     }
 
     /**
      * Menú de inicio del juego.
      */
-    public void menuInicial(){
+    public static void menuInicial(){
         int opcion;
         do {
             System.out.println("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
@@ -24,16 +19,30 @@ public class HundirLaFlota {
             System.out.println("┃  2 -     Tutorial    - 2  ┃");
             System.out.println("┃  0 -      Salir      - 0  ┃");
             System.out.println("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
-            opcion = scannerInt("\nElige una opción (0-2): ", 0, 2);
+            opcion = scannerInt("Elige una opción (0-2): ", 0, 2);
 
             switch (opcion) {
                 case 1:
+                    Tablero tablero = new Tablero();
+                    tablero.colocarBarcos();
                     break;
                 case 2:
+                    Tablero tablero2 = new Tablero();
+                    tablero2.mostrarMatrices(tablero2.getTablero(), tablero2.getTablero());
                     break;
             }
         } while (opcion != 0);
         System.out.println("Has cerrado el menú.");
+    }
+
+    public static void tutorial(){
+        Scanner sc = new Scanner(System.in);
+        System.out.print(
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" +
+                        "\nPresiona ENTER para continuar:");
+        sc.nextLine();
     }
 
 
@@ -43,7 +52,7 @@ public class HundirLaFlota {
      * @param min Número mínimo.
      * @param max Número máximo.
      */
-    public int scannerInt(String pregunta, int min, int max) {
+    public static int scannerInt(String pregunta, int min, int max) {
         Scanner sc = new Scanner(System.in);
         int userInput = 0;
         boolean isValid = false;

@@ -4,6 +4,9 @@ import java.util.Scanner;
 public class Tablero {
     private int[][] tablero;
 
+    /**
+     * Constructor que inicia el tablero.
+     */
     public Tablero (){
         this.tablero = new int[10][10];
 
@@ -18,7 +21,7 @@ public class Tablero {
     /**
      * Menú de inicio del juego.
      */
-    public static void mostrarIntro(){
+    public void mostrarIntro(){
         System.out.println("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
                 "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣸⣇⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
                 "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣸⣇⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
@@ -41,9 +44,9 @@ public class Tablero {
 
     /**
      * Muestra el tablero de una sola matriz
-     * @param matriz
      */
-    public static void mostrarMatriz(int[][] matriz) {
+    public void mostrarMatriz() {
+        int[][] matriz = tablero;
         String[] letras = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
         String[] simbolos = {"   ", " ░ ", " █ "};
 
@@ -74,7 +77,7 @@ public class Tablero {
      * @param matriz1
      * @param matriz2
      */
-    public static void mostrarMatrices(int[][] matriz1, int[][] matriz2) {
+    public void mostrarMatrices(int[][] matriz1, int[][] matriz2) {
         String[] letras = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
         String[] simbolos = {"   ", " ░ ", " █ "};
 
@@ -111,7 +114,7 @@ public class Tablero {
         System.out.println("     0   1   2   3   4   5   6   7   8   9     │     0   1   2   3   4   5   6   7   8   9    ");
     }
 
-    public static void colocarBarcos(int[][] matriz) {
+    public void colocarBarcos() {
         Scanner scanner = new Scanner(System.in);
         int[] barcos = {5, 4, 3, 3, 2, 2};
         String[] orientaciones = {"horizontal", "vertical"};
@@ -119,7 +122,7 @@ public class Tablero {
         for (int i = 0; i < barcos.length; i++) {
             boolean colocado = false;
             while (!colocado) {
-                Tablero.mostrarMatriz(matriz);
+                mostrarMatriz();
                 System.out.println("\nColoca tu barco de longitud " + barcos[i]);
 
                 int fila = -1;
@@ -164,8 +167,8 @@ public class Tablero {
                 }
                 String orientacion = orientaciones[opcion - 1];
 
-                if (esValido(matriz, barcos[i], fila, columna, orientacion)) {
-                    colocarBarco(matriz, barcos[i], fila, columna, orientacion);
+                if (esValido(tablero, barcos[i], fila, columna, orientacion)) {
+                    colocarBarco(tablero, barcos[i], fila, columna, orientacion);
                     colocado = true;
                 } else {
                     System.out.println("ERROR - Posición no válida. Intenta de nuevo.");
@@ -173,11 +176,11 @@ public class Tablero {
             }
         }
 
-        Tablero.mostrarMatriz(matriz);
+        mostrarMatriz();
         System.out.println("Tablero final.");
     }
 
-    private static void colocarBarco(int[][] matriz, int longitud, int fila, int columna, String orientacion) {
+    private void colocarBarco(int[][] matriz, int longitud, int fila, int columna, String orientacion) {
         if (orientacion.equals("horizontal")) {
             for (int i = 0; i < longitud; i++) {
                 matriz[fila][columna + i] = 2;
@@ -189,7 +192,7 @@ public class Tablero {
         }
     }
 
-    private static boolean esValido(int[][] matriz, int longitud, int fila, int columna, String orientacion) {
+    private boolean esValido(int[][] matriz, int longitud, int fila, int columna, String orientacion) {
         if (orientacion.equals("horizontal")) {
             if (columna + longitud > 10) {
                 return false;
@@ -210,6 +213,10 @@ public class Tablero {
             }
         }
         return true;
+    }
+
+    public int[][] getTablero() {
+        return tablero;
     }
 }
 
