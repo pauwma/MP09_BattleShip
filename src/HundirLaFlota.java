@@ -1,83 +1,75 @@
 import java.util.Scanner;
 
 public class HundirLaFlota {
+
     public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        char[][] tablero = new char[10][10];
+        tutorial();
+    }
 
-        // Inicializar tablero
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero[i].length; j++) {
-                tablero[i][j] = '-';
-            }
-        }
+    /**
+     * Menú de inicio del juego.
+     */
+    public static void menuInicial(){
+        int opcion;
+        do {
+            System.out.println("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
+            System.out.println("┃       MENU PRINCIPAL      ┃");
+            System.out.println("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫");
+            System.out.println("┃  1 -      Jugar      - 1  ┃");
+            System.out.println("┃  2 -     Tutorial    - 2  ┃");
+            System.out.println("┃  0 -      Salir      - 0  ┃");
+            System.out.println("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+            opcion = scannerInt("Elige una opción (0-2): ", 0, 2);
 
-        // Pedir al usuario los barcos
-        int[] barcos = {5, 4, 4, 3, 3, 3, 2, 2, 2, 2};
-        for (int i = 0; i < barcos.length; i++) {
-            int longitud = barcos[i];
-            System.out.println("Introduce la posición del barco de longitud " + longitud + ":");
-            System.out.print("Fila: ");
-            int fila = input.nextInt();
-            System.out.print("Columna: ");
-            int columna = input.nextInt();
-            System.out.print("Orientación (H para horizontal, V para vertical): ");
-            char orientacion = input.next().charAt(0);
-
-            // Colocar el barco en el tablero
-            boolean barcoColocado = false;
-            while (!barcoColocado) {
-                if (orientacion == 'H') {
-                    if (columna + longitud <= tablero.length) {
-                        barcoColocado = true;
-                        for (int j = columna; j < columna + longitud; j++) {
-                            if (tablero[fila][j] != '-') {
-                                barcoColocado = false;
-                                System.out.println("No se puede colocar aquí, hay otro barco.");
-                                break;
-                            }
-                        }
-                        if (barcoColocado) {
-                            for (int j = columna; j < columna + longitud; j++) {
-                                tablero[fila][j] = 'B';
-                            }
-                        }
-                    } else {
-                        System.out.println("No se puede colocar aquí, el barco se sale del tablero.");
-                        break;
-                    }
-                } else if (orientacion == 'V') {
-                    if (fila + longitud <= tablero.length) {
-                        barcoColocado = true;
-                        for (int j = fila; j < fila + longitud; j++) {
-                            if (tablero[j][columna] != '-') {
-                                barcoColocado = false;
-                                System.out.println("No se puede colocar aquí, hay otro barco.");
-                                break;
-                            }
-                        }
-                        if (barcoColocado) {
-                            for (int j = fila; j < fila + longitud; j++) {
-                                tablero[j][columna] = 'B';
-                            }
-                        }
-                    } else {
-                        System.out.println("No se puede colocar aquí, el barco se sale del tablero.");
-                        break;
-                    }
-                } else {
-                    System.out.println("Orientación incorrecta, introduce H o V.");
+            switch (opcion) {
+                case 1:
+                    Tablero tablero = new Tablero();
+                    tablero.colocarBarcos();
                     break;
-                }
+                case 2:
+                    Tablero tablero2 = new Tablero();
+                    tablero2.mostrarMatrices(tablero2.getTablero(), tablero2.getTablero());
+                    break;
             }
+        } while (opcion != 0);
+        System.out.println("Has cerrado el menú.");
+    }
 
-            // Mostrar tablero
-            for (int j = 0; j < tablero.length; j++) {
-                for (int k = 0; k < tablero[j].length; k++) {
-                    System.out.print(tablero[j][k] + " ");
+    public static void tutorial(){
+        Scanner sc = new Scanner(System.in);
+        System.out.print(
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" +
+                        "\nPresiona ENTER para continuar:");
+        sc.nextLine();
+    }
+
+
+    /**
+     * Método para preguntar al usuario por un Integer con excepciones.
+     * @param pregunta Pregunta para mostrar por pantalla.
+     * @param min Número mínimo.
+     * @param max Número máximo.
+     */
+    public static int scannerInt(String pregunta, int min, int max) {
+        Scanner sc = new Scanner(System.in);
+        int userInput = 0;
+        boolean isValid = false;
+        while (!isValid) {
+            try {
+                System.out.print(pregunta);
+                userInput = sc.nextInt();
+                if (userInput >= min && userInput <= max) {
+                    isValid = true;
+                } else {
+                    System.out.println("El número debe estar entre " + min + " y " + max + ".");
                 }
-                System.out.println();
+            } catch (Exception e) {
+                System.out.println("Ocurrió un error al leer la entrada. Por favor, inténtalo de nuevo con un número entero.");
+                sc.next();
             }
         }
+        return userInput;
     }
 }
