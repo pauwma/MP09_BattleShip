@@ -3,7 +3,8 @@ import java.util.Scanner;
 public class HundirLaFlota {
 
     public static void main(String[] args) {
-        tutorial();
+        inicio();
+        menuInicial();
     }
 
     /**
@@ -16,7 +17,7 @@ public class HundirLaFlota {
             System.out.println("┃       MENU PRINCIPAL      ┃");
             System.out.println("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫");
             System.out.println("┃  1 -      Jugar      - 1  ┃");
-            System.out.println("┃  2 -     Tutorial    - 2  ┃");
+            System.out.println("┃  2 -                 - 2  ┃");
             System.out.println("┃  0 -      Salir      - 0  ┃");
             System.out.println("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
             opcion = scannerInt("Elige una opción (0-2): ", 0, 2);
@@ -27,22 +28,48 @@ public class HundirLaFlota {
                     tablero.colocarBarcos();
                     break;
                 case 2:
-                    Tablero tablero2 = new Tablero();
-                    tablero2.mostrarMatrices(tablero2.getTablero(), tablero2.getTablero());
                     break;
             }
         } while (opcion != 0);
         System.out.println("Has cerrado el menú.");
     }
 
-    public static void tutorial(){
+    public static void inicio(){
         Scanner sc = new Scanner(System.in);
-        System.out.print(
-                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-                "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" +
-                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" +
-                        "\nPresiona ENTER para continuar:");
+        mostrarAscii();
         sc.nextLine();
+    }
+
+    public static void mostrarAscii(){
+        System.out.print(
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                        "   --    .-\"\"-.\n" +
+                        "      ) (     )\n" +
+                        "     (   )   (\n" +
+                        "        /     )\n" +
+                        "       (_    _)                     0_,-.__\n" +
+                        "         (_  )_                     |_.-._/                                                                _________\n" +
+                        "          (    )                    |_--..\\                                                           <9;/  ,__-==`\n" +
+                        "           (__)                     |__--_/                                                        ./~~( `)/`\n" +
+                        "        |''   ``\\                   |                                                          ,-'_/// \\  }\n" +
+                        "        |        \\                  |      /b.                                                  ~       XX\\\\\n" +
+                        "        |         \\  ,,,---===?A`\\  |  ,==y'                                                                \\\n" +
+                        "      ___,,,,,---==\"\"\\        |M] \\ | ;|\\ |>\n" +
+                        "              _   _   \\   ___,|H,,---==\"\"\"\"bno,\n" +
+                        "       o  O  (_) (_)   \\ /          _     AWAW/\n" +
+                        "                        /         _(+)_  dMM/\n" +
+                        "         \\@_,,,,,,---==\"   \\      \\\\|//  MW/\n" +
+                        "   --''''\"                         ===  d/\n" +
+                        "                                       //\n" +
+                        "                                       ,'___________________________________     ______________________________\n" +
+                        "      \\    \\    \\     \\               ,/~~~~~~~~~~~~~~~~~~   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     ~~~~~~~\n" +
+                        "                            _____    ,'  ~~~   .-\"\"-.~~~~~~           .-\"\"-.  ~~~   .-\\\"\\\"-.~~~~~~  .-\\\"\\\"-.\\n\"\n" +
+                        "         .-\"\"-.           ///==---   /`-._ ..-'      -.__..-'/`-._ ..-'      -.__..-'            -.__..-' \n" +
+                        "               `-.__..-' =====\\\\\\\\\\\\ V/  .---\\.\n" +
+                        "                         ~~~~~~~~~~~~, _',--/_.\\  .-\"\"-.                          .-\"\"-.\n" +
+                        "                               .-\"\"-.___` --  \\|         -.__..-                           -.__..-\n" +
+                        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" +
+                        "\nEs recomendado poder ver toda la imagen para jugar, presiona ENTER para continuar:");
     }
 
 
