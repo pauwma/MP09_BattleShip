@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class ClienteHundirLaFlota {
     private static final String HOST = "localhost";
-    private static final int PUERTO = 8080;
+    private static final int PUERTO = 12345;
 
     public static void main(String[] args) throws IOException {
         try (Socket socket = new Socket(HOST, PUERTO)) {
@@ -16,13 +16,14 @@ public class ClienteHundirLaFlota {
             while ((mensajeDelServidor = in.readLine()) != null) {
                 System.out.println(mensajeDelServidor);
 
-                if (mensajeDelServidor.startsWith("Iniciando juego")) {
+                if (mensajeDelServidor.startsWith("inicio")) {
                     Tablero tablero = new Tablero();
                     System.out.println("Coloca tus barcos:");
                     tablero.colocarBarcos();
                     int[][] matriz = tablero.getTablero();
 
                     StringBuilder matrizSerializada = new StringBuilder();
+                    matrizSerializada.append("MATRIZ");
                     for (int i = 0; i < 10; i++) {
                         for (int j = 0; j < 10; j++) {
                             matrizSerializada.append(matriz[i][j]);
@@ -34,8 +35,8 @@ public class ClienteHundirLaFlota {
                             matrizSerializada.append("\n");
                         }
                     }
-
                     out.println(matrizSerializada.toString());
+
                 } else if (mensajeDelServidor.startsWith("Tu turno")) {
                     System.out.println("Introduce una posición de la A a la J:");
                     String letra = stdIn.nextLine().toUpperCase();

@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 public class Tablero {
     private int[][] tablero;
+    private String tableroSerializado;
 
     /**
      * Constructor que inicia el tablero.
@@ -153,7 +154,7 @@ public class Tablero {
         }
 
         mostrarMatriz();
-        System.out.println("Tablero final.");
+
     }
 
     private void colocarBarco(int[][] matriz, int longitud, int fila, int columna, String orientacion) {
