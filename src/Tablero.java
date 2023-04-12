@@ -3,7 +3,6 @@ import java.util.Scanner;
 
 public class Tablero {
     private int[][] tablero;
-    private String tableroSerializado;
 
     /**
      * Constructor que inicia el tablero.
