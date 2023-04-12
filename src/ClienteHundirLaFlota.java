@@ -23,21 +23,15 @@ public class ClienteHundirLaFlota {
                     int[][] matriz = tablero.getTablero();
 
                     StringBuilder matrizSerializada = new StringBuilder();
-                    matrizSerializada.append("MATRIZ");
+                    matrizSerializada.append("MATRIZ-");
                     for (int i = 0; i < 10; i++) {
                         for (int j = 0; j < 10; j++) {
                             matrizSerializada.append(matriz[i][j]);
-                            if (j < 9) {
-                                matrizSerializada.append(" ");
-                            }
-                        }
-                        if (i < 9) {
-                            matrizSerializada.append("\n");
                         }
                     }
                     out.println(matrizSerializada.toString());
 
-                } else if (mensajeDelServidor.startsWith("Tu turno")) {
+                } else if (mensajeDelServidor.startsWith("turno")) {
                     System.out.println("Introduce una posición de la A a la J:");
                     String letra = stdIn.nextLine().toUpperCase();
                     System.out.println("Introduce una posición de 0 a 9:");
