@@ -1,3 +1,5 @@
+import com.sun.tools.javac.Main;
+
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -5,12 +7,11 @@ import java.util.Scanner;
 public class ClienteHundirLaFlota {
     private static final String HOST = "localhost";
     private static final int PUERTO = 12345;
-
     public static void main(String[] args) throws IOException {
+
         try (Socket socket = new Socket(HOST, PUERTO)) {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            Scanner stdIn = new Scanner(System.in);
 
             String mensajeDelServidor;
             while ((mensajeDelServidor = in.readLine()) != null) {
@@ -31,18 +32,27 @@ public class ClienteHundirLaFlota {
                     }
                     out.println(matrizSerializada.toString());
 
-                } else if (mensajeDelServidor.startsWith("turno")) {
-                    System.out.println("Introduce una posición de la A a la J:");
-                    String letra = stdIn.nextLine().toUpperCase();
-                    System.out.println("Introduce una posición de 0 a 9:");
-                    int numero = Integer.parseInt(stdIn.nextLine());
-
-                    String posicion = letra + " " + numero;
+                } else if (mensajeDelServidor.startsWith("juego")) {
+                    String posicion = introducirPosicion();
                     out.println(posicion);
                 }
 
                 // Lógica del juego y comunicación entre clientes
             }
         }
+    }
+
+    public static String introducirPosicion(){
+        Scanner stdIn = new Scanner(System.in);
+        System.out.println("Introduce una posición de la A a la J:");
+        String letra = stdIn.nextLine().toUpperCase();
+        int letraConvertida = letra.charAt(0) - 65;
+        System.out.println("La letra " + letra + " equivale a " + letraConvertida);
+
+        System.out.println("Introduce una posición de 0 a 9:");
+        int numero = Integer.parseInt(stdIn.nextLine());
+
+        String posicion = letraConvertida + numero+"";
+        return posicion;
     }
 }
