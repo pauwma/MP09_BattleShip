@@ -1,4 +1,12 @@
+import java.util.Random;
+
 public class JuegoController {
+
+    private boolean ganador;
+
+    public JuegoController() {
+        randomTurno();
+    }
 
     private int[][] tableroJ1;
     private int[][] tableroJ2;
@@ -10,6 +18,23 @@ public class JuegoController {
 
     public void setTableroJ2(int[][] matriz) {
         this.tableroJ2 = matriz;
+    }
+
+    public void randomTurno() {
+        Random random = new Random();
+        turno = random.nextBoolean();
+    }
+
+    public void nextTurno() {
+        turno = !turno;
+    }
+
+    public boolean isGameOver() {
+        return ganador;
+    }
+
+    public void setGanador(boolean ganador) {
+        this.ganador = ganador;
     }
 
     public String matrizToString(int[][] matriz) {

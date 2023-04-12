@@ -41,7 +41,7 @@ public class ServerHundirLaFlota {
                 executorService.execute(clientHandler);
 
                 if (connectedUsers == MAX_USERS) {
-                    System.out.println("Iniciando juego, enviando mensaje 'inicio'...");
+                    System.out.println("Iniciando juego...");
                     for (ClientHandler client : clients) {
                         client.sendMessage("inicio");
                     }
@@ -55,10 +55,19 @@ public class ServerHundirLaFlota {
     static class ClientHandler implements Runnable {
         private Socket socket;
         private PrintWriter out;
+        private String response;
 
         public ClientHandler(Socket socket, PrintWriter out) {
             this.socket = socket;
             this.out = out;
+        }
+
+        public String getResponse() {
+            return response;
+        }
+
+        public void setResponse(String response) {
+            this.response = response;
         }
 
         @Override
@@ -69,6 +78,7 @@ public class ServerHundirLaFlota {
                 while ((inputLine = in.readLine()) != null) {
                     String processedData = processData(inputLine);
                     System.out.println(processedData);
+                    setResponse(processedData);
                 }
             } catch (IOException e) {
                 System.err.println("Error al comunicarse con el cliente: " + e.getMessage());
@@ -101,17 +111,8 @@ public class ServerHundirLaFlota {
                 }
             }
             matrices.add(matriz);
-            System.out.println("Matriz recibida y almacenada.");
 
-            // Imprimir la matriz
-            for (int i = 0; i < matriz.length; i++) {
-                for (int j = 0; j < matriz[i].length; j++) {
-                    System.out.print(matriz[i][j] + " ");
-                }
-                System.out.println();
-            }
-
-            // Guardar los tableros en el controlador de juego
+            // ? Guardar los tableros en el controlador de juego
             if (matrices.size() == 1) {
                 juego.setTableroJ1(matriz);
                 System.out.println("Tablero del jugador 1 almacenado.");
@@ -119,20 +120,56 @@ public class ServerHundirLaFlota {
                 juego.setTableroJ2(matriz);
                 System.out.println("Tablero del jugador 2 almacenado.");
 
-                // Verificar si ambos tableros están almacenados y enviar el mensaje "juego"
+                // ? Verificar si ambos tableros están almacenados y enviar el mensaje "juego"
                 if (juego.getTableroJ1() != null && juego.getTableroJ2() != null) {
                     System.out.println("Ambos tableros almacenados. Iniciando el juego...");
-                    for (ClientHandler client : clients) {
-                        client.sendMessage("juego");
-                    }
+                    gameLoop();
                 }
             }
-
             return "Matriz almacenada";
         } else {
             // Realizar el procesamiento de datos necesario aquí.
             // Este es solo un ejemplo básico de cómo devolver la información procesada.
             return "Datos procesados: " + data.toUpperCase();
+        }
+    }
+
+
+    public static void gameLoop() {
+        while (!juego.isGameOver()) {
+            juego.nextTurno();
+            int currentPlayer = juego.isTurno() ? 0 : 1;
+            if (juego.isTurno()) {
+                clients.get(0).sendMessage("turno");
+                clients.get(1).sendMessage("espera");
+            } else {
+                clients.get(0).sendMessage("espera");
+                clients.get(1).sendMessage("turno");
+            }
+
+            boolean validResponse = false;
+            while (!validResponse) {
+                try {
+                    Thread.sleep(1000); // Espera 1 segundo antes de verificar la respuesta nuevamente
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                String playerResponse = clients.get(currentPlayer).getResponse();
+                if (playerResponse != null) {
+                    // Procesa la respuesta del jugador y verifica si hay un ganador
+                    // Actualiza juego.isGameOver() según sea necesario
+                    validResponse = true;
+
+                    // Restablece la variable response a null
+                    clients.get(currentPlayer).setResponse(null);
+                }
+            }
+        }
+
+        // Envía el mensaje de fin del juego a ambos jugadores
+        for (ClientHandler client : clients) {
+            client.sendMessage("Fin del juego");
         }
     }
 }
