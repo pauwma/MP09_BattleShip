@@ -13,20 +13,27 @@ public class ServerHundirLaFlota {
 
     private static final int PORT = 12345;
     private static final int MAX_USERS = 2;
+    private static JuegoController juego;
     private static List<int[][]> matrices = new ArrayList<>();
+    private static List<ClientHandler> clients = new ArrayList<>();
+
 
     public static void main(String[] args) {
+        juego = new JuegoController(); // ? Inicializar el objeto JuegoController
         ExecutorService executorService = Executors.newFixedThreadPool(MAX_USERS);
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Servidor iniciado en el puerto " + PORT);
             int connectedUsers = 0;
-            List<ClientHandler> clients = new ArrayList<>();
 
             while (connectedUsers < MAX_USERS) {
                 Socket socket = serverSocket.accept();
                 connectedUsers++;
-                System.out.println("Usuario conectado, esperando a otro usuario...");
+                if (connectedUsers == 1){
+                    System.out.println("J1 conectado, esperando a otro usuario...");
+                } else if (connectedUsers == 2){
+                    System.out.println("J2 conectado");
+                }
 
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 ClientHandler clientHandler = new ClientHandler(socket, out);
@@ -34,7 +41,7 @@ public class ServerHundirLaFlota {
                 executorService.execute(clientHandler);
 
                 if (connectedUsers == MAX_USERS) {
-                    System.out.println("Los 2 usuarios están conectados. Enviando mensaje 'inicio'...");
+                    System.out.println("Iniciando juego, enviando mensaje 'inicio'...");
                     for (ClientHandler client : clients) {
                         client.sendMessage("inicio");
                     }
@@ -83,13 +90,14 @@ public class ServerHundirLaFlota {
     }
 
     public static String processData(String data) {
-        if (data.startsWith("MATRIZ")) {
-            String[] lines = data.split("\n");
+        if (data.startsWith("MATRIZ-")) {
+            String matrixData = data.substring(7); // ? Eliminar "MATRIZ-" del comienzo
             int[][] matriz = new int[10][10];
-            for (int i = 1; i < lines.length; i++) {
-                String[] values = lines[i].split(" ");
-                for (int j = 0; j < values.length; j++) {
-                    matriz[i - 1][j] = Integer.parseInt(values[j]);
+            int index = 0;
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    matriz[i][j] = Character.getNumericValue(matrixData.charAt(index));
+                    index++;
                 }
             }
             matrices.add(matriz);
@@ -103,6 +111,23 @@ public class ServerHundirLaFlota {
                 System.out.println();
             }
 
+            // Guardar los tableros en el controlador de juego
+            if (matrices.size() == 1) {
+                juego.setTableroJ1(matriz);
+                System.out.println("Tablero del jugador 1 almacenado.");
+            } else if (matrices.size() == 2) {
+                juego.setTableroJ2(matriz);
+                System.out.println("Tablero del jugador 2 almacenado.");
+
+                // Verificar si ambos tableros están almacenados y enviar el mensaje "juego"
+                if (juego.getTableroJ1() != null && juego.getTableroJ2() != null) {
+                    System.out.println("Ambos tableros almacenados. Iniciando el juego...");
+                    for (ClientHandler client : clients) {
+                        client.sendMessage("juego");
+                    }
+                }
+            }
+
             return "Matriz almacenada";
         } else {
             // Realizar el procesamiento de datos necesario aquí.
@@ -110,6 +135,4 @@ public class ServerHundirLaFlota {
             return "Datos procesados: " + data.toUpperCase();
         }
     }
-
-
 }
