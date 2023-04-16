@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,9 +30,9 @@ public class ServerHundirLaFlota {
             while (connectedUsers < MAX_USERS) {
                 Socket socket = serverSocket.accept();
                 connectedUsers++;
-                if (connectedUsers == 1){
+                if (connectedUsers == 1) {
                     System.out.println("J1 conectado, esperando a otro usuario...");
-                } else if (connectedUsers == 2){
+                } else if (connectedUsers == 2) {
                     System.out.println("J2 conectado");
                 }
 
@@ -139,12 +140,12 @@ public class ServerHundirLaFlota {
         while (!juego.isGameOver()) {
             juego.nextTurno();
             int currentPlayer = juego.isTurno() ? 0 : 1;
-            if (juego.isTurno()) {
-                clients.get(0).sendMessage("turno");
-                clients.get(1).sendMessage("espera");
+            if (juego.isTurno() == juego.isTurno()) {
+                clients.get(currentPlayer).sendMessage("turno");
+                clients.get(1 - currentPlayer).sendMessage("espera");
             } else {
-                clients.get(0).sendMessage("espera");
-                clients.get(1).sendMessage("turno");
+                clients.get(currentPlayer).sendMessage("espera");
+                clients.get(1 - currentPlayer).sendMessage("turno");
             }
 
             boolean validResponse = false;
@@ -157,19 +158,9 @@ public class ServerHundirLaFlota {
 
                 String playerResponse = clients.get(currentPlayer).getResponse();
                 if (playerResponse != null) {
-                    // Procesa la respuesta del jugador y verifica si hay un ganador
-                    // Actualiza juego.isGameOver() según sea necesario
-                    validResponse = true;
-
-                    // Restablece la variable response a null
-                    clients.get(currentPlayer).setResponse(null);
+                    System.out.println(playerResponse);
                 }
             }
-        }
-
-        // Envía el mensaje de fin del juego a ambos jugadores
-        for (ClientHandler client : clients) {
-            client.sendMessage("Fin del juego");
         }
     }
 }
