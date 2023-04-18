@@ -32,7 +32,7 @@ public class ClienteHundirLaFlota {
                     }
                     out.println(matrizSerializada.toString());
 
-                } else if (mensajeDelServidor.startsWith("juego")) {
+                } else if (mensajeDelServidor.startsWith("turno")) {
                     String posicion = introducirPosicion();
                     out.println(posicion);
                 } else if (mensajeDelServidor.startsWith("turno")){
@@ -50,13 +50,12 @@ public class ClienteHundirLaFlota {
         Scanner stdIn = new Scanner(System.in);
         System.out.println("Introduce una posición de la A a la J:");
         String letra = stdIn.nextLine().toUpperCase();
-        int letraConvertida = letra.charAt(0) - 65;
-        System.out.println("La letra " + letra + " equivale a " + letraConvertida);
+        int posHorizontal = letra.charAt(0) - 65;
 
         System.out.println("Introduce una posición de 0 a 9:");
-        int numero = Integer.parseInt(stdIn.nextLine());
+        int posVertical = Integer.parseInt(stdIn.nextLine());
 
-        String posicion = letraConvertida + numero+"";
+        String posicion = "POS-" + posHorizontal + "" + posVertical;
         return posicion;
     }
 }
