@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerHundirLaFlota {
 
@@ -74,7 +75,6 @@ public class ServerHundirLaFlota {
         @Override
         public void run() {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     String processedData = processData(inputLine);
@@ -114,20 +114,20 @@ public class ServerHundirLaFlota {
             matrices.add(matriz);
 
             // ? Guardar los tableros en el controlador de juego
+            int tmpJugador = 0;
             if (matrices.size() == 1) {
                 juego.setTableroJ1(matriz);
-                System.out.println("Tablero del jugador 1 almacenado.");
+                tmpJugador = 1;
             } else if (matrices.size() == 2) {
                 juego.setTableroJ2(matriz);
-                System.out.println("Tablero del jugador 2 almacenado.");
-
-                // ? Verificar si ambos tableros están almacenados y enviar el mensaje "juego"
+                tmpJugador = 2;
+                // Verificar si ambos tableros están almacenados y comenzar el juego
                 if (juego.getTableroJ1() != null && juego.getTableroJ2() != null) {
                     System.out.println("Ambos tableros almacenados. Iniciando el juego...");
-                    gameLoop();
+                    startGameLoop();
                 }
             }
-            return "Matriz almacenada";
+            return "Tablero del jugador " + tmpJugador + " almacenado.";
         } else {
             // Realizar el procesamiento de datos necesario aquí.
             // Este es solo un ejemplo básico de cómo devolver la información procesada.
@@ -135,32 +135,43 @@ public class ServerHundirLaFlota {
         }
     }
 
+    public static void startGameLoop() {
+        Random random = new Random();
+        boolean randomTurn = random.nextBoolean();
+
+        // Asignar turno inicial aleatoriamente
+        juego.setTurno(randomTurn);
+        clients.get(0).sendMessage(randomTurn ? "turno" : "espera");
+        clients.get(1).sendMessage(randomTurn ? "espera" : "turno");
+
+        new Thread(() -> gameLoop()).start();
+    }
 
     public static void gameLoop() {
-        while (!juego.isGameOver()) {
-            juego.nextTurno();
-            int currentPlayer = juego.isTurno() ? 0 : 1;
-            if (juego.isTurno() == juego.isTurno()) {
-                clients.get(currentPlayer).sendMessage("turno");
-                clients.get(1 - currentPlayer).sendMessage("espera");
-            } else {
-                clients.get(currentPlayer).sendMessage("espera");
-                clients.get(1 - currentPlayer).sendMessage("turno");
-            }
+        AtomicBoolean validResponse = new AtomicBoolean(false);
 
-            boolean validResponse = false;
-            while (!validResponse) {
+        while (!juego.isGameOver()) {
+            int currentPlayer = juego.isTurno() ? 0 : 1;
+            validResponse.set(false);
+
+            while (!validResponse.get()) {
                 try {
-                    Thread.sleep(1000); // Espera 1 segundo antes de verificar la respuesta nuevamente
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
                 String playerResponse = clients.get(currentPlayer).getResponse();
-                if (playerResponse != null) {
-                    System.out.println(playerResponse);
+                if (playerResponse != null && playerResponse.startsWith("POS-")) {
+                    validResponse.set(juego.procesarPosicion(playerResponse));
+                    clients.get(currentPlayer).setResponse(null);
                 }
             }
+
+            // Cambiar el turno
+            juego.nextTurno();
+            clients.get(0).sendMessage(juego.isTurno() ? "turno" : "espera");
+            clients.get(1).sendMessage(juego.isTurno() ? "espera" : "turno");
         }
     }
 }

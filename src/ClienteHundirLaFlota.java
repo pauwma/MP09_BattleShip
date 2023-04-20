@@ -32,16 +32,13 @@ public class ClienteHundirLaFlota {
                     }
                     out.println(matrizSerializada.toString());
 
-                } else if (mensajeDelServidor.startsWith("turno")) {
-                    String posicion = introducirPosicion();
-                    out.println(posicion);
-                } else if (mensajeDelServidor.startsWith("turno")){
-                    introducirPosicion();
+                }
+                else if (mensajeDelServidor.startsWith("turno")) {
+                    String tmpPosicion = introducirPosicion();
+                    out.println(tmpPosicion);
                 } else if (mensajeDelServidor.startsWith("espera")){
                     System.out.println("Tu rival está haciendo su jugada, espera a tu turno...");
                 }
-
-                // Lógica del juego y comunicación entre clientes
             }
         }
     }
