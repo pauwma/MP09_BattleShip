@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 public class ClienteHundirLaFlota {
     private static final String HOST = "localhost";
+    //private static final String HOST = "192.168.22.109";
+
     private static final int PUERTO = 12345;
     public static void main(String[] args) throws IOException {
 

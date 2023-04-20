@@ -77,10 +77,9 @@ public class JuegoController {
 
     // Método para procesar la entrada de posición
     public boolean procesarPosicion(String tmpPos) {
-
-        String posData = tmpPos.substring(4); // ? Eliminar "POS-" del comienzo
-        int x = Character.getNumericValue(posData.charAt(0));
-        int y = Character.getNumericValue(posData.charAt(1));
+        /*
+        int x = Character.getNumericValue(tmpPos.charAt(0));
+        int y = Character.getNumericValue(tmpPos.charAt(1));
 
         // Asumiendo que la posición es 0-indexada y la entrada es válida (dentro del rango 0-9)
         int[][] tableroActual = turno ? tableroJ1 : tableroJ2;
@@ -104,6 +103,8 @@ public class JuegoController {
             }
         }
         return false; // Retorna false si no se hundió un barco o la posición ya ha sido atacada
+         */
+        return true;
     }
 
     // Método para verificar si todos los barcos en un tablero han sido hundidos

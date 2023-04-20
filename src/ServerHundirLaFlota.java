@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ServerHundirLaFlota {
 
@@ -79,7 +80,10 @@ public class ServerHundirLaFlota {
                 while ((inputLine = in.readLine()) != null) {
                     String processedData = processData(inputLine);
                     System.out.println(processedData);
-                    setResponse(processedData);
+                    synchronized (this) {
+                        setResponse(processedData);
+                        notify();
+                    }
                 }
             } catch (IOException e) {
                 System.err.println("Error al comunicarse con el cliente: " + e.getMessage());
@@ -93,11 +97,26 @@ public class ServerHundirLaFlota {
             }
         }
 
+
         public void sendMessage(String message) {
             if (out != null) {
                 out.println(message);
             }
         }
+
+        public synchronized String waitForResponse() {
+            while (response == null) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            String result = response;
+            response = null;
+            return result;
+        }
+
     }
 
     public static String processData(String data) {
@@ -128,6 +147,9 @@ public class ServerHundirLaFlota {
                 }
             }
             return "Tablero del jugador " + tmpJugador + " almacenado.";
+        } else if (data.startsWith("POS-")){
+            String posData = data.substring(4); // ? Eliminar "POS-" del comienzo
+            return posData;
         } else {
             // Realizar el procesamiento de datos necesario aquí.
             // Este es solo un ejemplo básico de cómo devolver la información procesada.
@@ -148,30 +170,35 @@ public class ServerHundirLaFlota {
     }
 
     public static void gameLoop() {
-        AtomicBoolean validResponse = new AtomicBoolean(false);
+        juego.randomTurno();
+        int currentPlayer = 0;
 
         while (!juego.isGameOver()) {
-            int currentPlayer = juego.isTurno() ? 0 : 1;
-            validResponse.set(false);
 
-            while (!validResponse.get()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                String playerResponse = clients.get(currentPlayer).getResponse();
-                if (playerResponse != null && playerResponse.startsWith("POS-")) {
-                    validResponse.set(juego.procesarPosicion(playerResponse));
-                    clients.get(currentPlayer).setResponse(null);
-                }
+            if (juego.isTurno()){
+                currentPlayer = 0;
+            } else {
+                currentPlayer = 1;
             }
 
-            // Cambiar el turno
-            juego.nextTurno();
-            clients.get(0).sendMessage(juego.isTurno() ? "turno" : "espera");
-            clients.get(1).sendMessage(juego.isTurno() ? "espera" : "turno");
+            String playerResponse = clients.get(currentPlayer).waitForResponse();
+
+            if (playerResponse != null) {
+                boolean validMove = juego.procesarPosicion(playerResponse);
+
+                if (validMove) {
+                    // Cambiar el turno solo si el movimiento es válido
+                    juego.nextTurno();
+                    clients.get(0).sendMessage(juego.isTurno() ? "turno" : "espera");
+                    clients.get(1).sendMessage(juego.isTurno() ? "espera" : "turno");
+                } else {
+                    // Si el movimiento no es válido, informar al jugador actual para que realice otro intento
+                    clients.get(currentPlayer).sendMessage("intentar_nuevamente");
+                }
+            }
         }
     }
+
+
+
 }
