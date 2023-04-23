@@ -168,10 +168,16 @@ public class ServerHundirLaFlota {
         juego.setTurno(!randomTurn); // Cambiar el turno en el controlador de juego
 
 
-        new Thread(() -> gameLoop()).start();
+        new Thread(() -> {
+            try {
+                gameLoop();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
-    public static void gameLoop() {
+    public static void gameLoop() throws InterruptedException {
         juego.randomTurno();
         int currentPlayer = 0;
 
@@ -193,6 +199,7 @@ public class ServerHundirLaFlota {
                     juego.nextTurno();
                     clients.get(0).sendMessage(juego.isTurno() ? "turno" : "espera");
                     clients.get(1).sendMessage(juego.isTurno() ? "espera" : "turno");
+                    Thread.sleep(1000);
                 } else {
                     // Si el movimiento no es válido, informar al jugador actual para que realice otro intento
                     clients.get(currentPlayer).sendMessage("intentar_nuevamente");
