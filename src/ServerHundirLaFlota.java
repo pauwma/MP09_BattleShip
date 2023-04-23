@@ -14,28 +14,34 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ServerHundirLaFlota {
 
-    private static final int PORT = 12345;
+    private static int PORT = 12345;
     private static final int MAX_USERS = 2;
     private static JuegoController juego;
     private static List<int[][]> matrices = new ArrayList<>();
     private static List<ClientHandler> clients = new ArrayList<>();
+    private static boolean logEnabled = false; // Cambia a true para habilitar los mensajes de registro
 
+    public ServerHundirLaFlota(int puerto){
+        PORT = puerto;
+    }
+
+    public ServerHundirLaFlota(){}
 
     public static void main(String[] args) {
         juego = new JuegoController(); // ? Inicializar el objeto JuegoController
         ExecutorService executorService = Executors.newFixedThreadPool(MAX_USERS);
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Servidor iniciado en el puerto " + PORT);
+            log("Servidor iniciado en el puerto " + PORT);
             int connectedUsers = 0;
 
             while (connectedUsers < MAX_USERS) {
                 Socket socket = serverSocket.accept();
                 connectedUsers++;
                 if (connectedUsers == 1) {
-                    System.out.println("J1 conectado, esperando a otro usuario...");
+                    log("J1 conectado, esperando a otro usuario...");
                 } else if (connectedUsers == 2) {
-                    System.out.println("J2 conectado");
+                    log("J2 conectado");
                 }
 
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -44,7 +50,7 @@ public class ServerHundirLaFlota {
                 executorService.execute(clientHandler);
 
                 if (connectedUsers == MAX_USERS) {
-                    System.out.println("Iniciando juego...");
+                    log("Iniciando juego...");
                     for (ClientHandler client : clients) {
                         client.sendMessage("inicio");
                     }
@@ -80,7 +86,7 @@ public class ServerHundirLaFlota {
                 while ((inputLine = in.readLine()) != null) {
                     String processedData = processData(inputLine);
                     if(processedData !=null){
-                        System.out.println(processedData);
+                        log(processedData);
                     }
                     synchronized (this) {
                         setResponse(processedData);
@@ -143,7 +149,7 @@ public class ServerHundirLaFlota {
                 tmpJugador = 2;
                 // Verificar si ambos tableros están almacenados y comenzar el juego
                 if (juego.getTableroJ1() != null && juego.getTableroJ2() != null) {
-                    System.out.println("Ambos tableros almacenados. Iniciando el juego...");
+                    log("Ambos tableros almacenados. Iniciando el juego...");
                     startGameLoop();
                 }
             }
@@ -189,21 +195,38 @@ public class ServerHundirLaFlota {
             if (playerResponse != null && playerResponse.length() == 2) {
                 boolean validMove = juego.procesarPosicion(playerResponse);
 
-                if (validMove) {
-                    // Cambiar el turno solo si el movimiento es válido
-                    juego.nextTurno();
+                // ? Enviar ganador
+                if (juego.comprobarGanador()){
+                    clients.get(0).sendMessage(juego.isTurno() ? "ganador" : "perdedor");
+                    clients.get(1).sendMessage(juego.isTurno() ? "perdedor" : "ganador");
+                } else {
+                    if (validMove) {
+                        // Cambiar el turno solo si el movimiento es válido
+                        juego.nextTurno();
 
-                    // ? Devolver tablas
-                    String tableros = juego.matricesToString(juego.getTableroJ1(), juego.getTableroJ2());
-                    clients.get(0).sendMessage(tableros);
-                    clients.get(1).sendMessage(tableros);
+                        // ? Devolver tablas
+                        String tableros = juego.matricesToString(juego.getTableroJ1(), juego.getTableroJ2());
+                        clients.get(0).sendMessage(tableros);
+                        clients.get(1).sendMessage(tableros);
 
-                    // ? Enviar turnos
-                    clients.get(0).sendMessage(juego.isTurno() ? "turno" : "espera");
-                    clients.get(1).sendMessage(juego.isTurno() ? "espera" : "turno");
-                    Thread.sleep(1000);
+                        // ? Enviar turnos
+                        clients.get(0).sendMessage(juego.isTurno() ? "turno" : "espera");
+                        clients.get(1).sendMessage(juego.isTurno() ? "espera" : "turno");
+                        Thread.sleep(1000);
+                    }
                 }
             }
+        }
+    }
+
+    public static void main(String[] args) {
+        ServerHundirLaFlota serverHundirLaFlota = new ServerHundirLaFlota();
+        serverHundirLaFlota.inicio();
+    }
+
+    private static void log(String message) {
+        if (logEnabled) {
+            log(message);
         }
     }
 

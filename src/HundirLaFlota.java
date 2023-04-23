@@ -1,4 +1,8 @@
+import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HundirLaFlota {
 
@@ -16,20 +20,65 @@ public class HundirLaFlota {
             System.out.println("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
             System.out.println("┃       MENU PRINCIPAL      ┃");
             System.out.println("┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫");
-            System.out.println("┃  1 -      Jugar      - 1  ┃");
-            System.out.println("┃  2 -                 - 2  ┃");
+            System.out.println("┃  1 -     Unirse      - 1  ┃");
+            System.out.println("┃  2 -     Hostear     - 2  ┃");
             System.out.println("┃  0 -      Salir      - 0  ┃");
             System.out.println("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
             opcion = scannerInt("Elige una opción (0-2): ", 0, 2);
 
             switch (opcion) {
                 case 1:
-                    Tablero tablero = new Tablero();
-                    tablero.colocarBarcos();
+                    try {
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Introduce la dirección IP: ");
+                        String ip = scanner.nextLine();
+
+                        if (!esDireccionIpValida(ip)) {
+                            System.err.println("Error: La dirección IP ingresada no tiene un formato válido.");
+                            break;
+                        }
+
+                        System.out.print("Introduce el puerto: ");
+                        int puerto = scanner.nextInt();
+
+                        ClienteHundirLaFlota cliente = new ClienteHundirLaFlota(ip, puerto);
+                        cliente.inicio();
+                    } catch (InputMismatchException e) {
+                        System.err.println("Error: Por favor, introduzca un puerto válido.");
+                    } catch (Exception e) {
+                        System.err.println("Error inesperado: " + e.getMessage());
+                    }
                     break;
                 case 2:
+                    Scanner scanner = new Scanner(System.in);
+                    System.out.print("Introduzca el puerto que desea utilizar: ");
+                    int puerto;
+                    try {
+                        puerto = scanner.nextInt();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Por favor, introduce un número de puerto válido.");
+                        break;
+                    }
+
+                    Thread serverThread = new Thread(() -> {
+                        try {
+                            ServerHundirLaFlota server = new ServerHundirLaFlota(puerto);
+                            server.inicio();
+                        } catch (Exception e) {
+                            System.err.println("Error al iniciar el servidor: " + e.getMessage());
+                        }
+                    });
+                    serverThread.start();
+
+                    ClienteHundirLaFlota cliente = new ClienteHundirLaFlota("localhost", puerto);
+                    try {
+                        cliente.inicio();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
             }
+
         } while (opcion != 0);
         System.out.println("Has cerrado el menú.");
     }
@@ -98,5 +147,19 @@ public class HundirLaFlota {
             }
         }
         return userInput;
+    }
+
+    public static boolean esDireccionIpValida(String ip) {
+        if (ip.equalsIgnoreCase("localhost")) {
+            return true;
+        }
+
+        String regex = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
+                + "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
+                + "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
+                + "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+        Pattern patron = Pattern.compile(regex);
+        Matcher matcher = patron.matcher(ip);
+        return matcher.matches();
     }
 }

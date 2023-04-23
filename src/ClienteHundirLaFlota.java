@@ -5,12 +5,18 @@ import java.net.*;
 import java.util.Scanner;
 
 public class ClienteHundirLaFlota {
-    private static final String HOST = "localhost";
+    private static String HOST = "localhost";
     //private static final String HOST = "192.168.22.109";
 
-    private static final int PUERTO = 12345;
-    public static void main(String[] args) throws IOException {
+    private static int PUERTO = 12345;
 
+    private boolean inicio;
+
+    public ClienteHundirLaFlota(String ipServidor, int puerto){
+        HOST = ipServidor;
+        PUERTO = puerto;
+    }
+    public void inicio() throws IOException {
         try (Socket socket = new Socket(HOST, PUERTO)) {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -18,7 +24,7 @@ public class ClienteHundirLaFlota {
 
             String mensajeDelServidor;
             while ((mensajeDelServidor = in.readLine()) != null) {
-                System.out.println(mensajeDelServidor);
+                // System.out.println(mensajeDelServidor); LOGS
 
                 if (mensajeDelServidor.startsWith("inicio")) {
                     System.out.println("Coloca tus barcos:");
@@ -36,12 +42,26 @@ public class ClienteHundirLaFlota {
 
                 }
                 else if (mensajeDelServidor.startsWith("turno")) {
+                    if (inicio == false){
+                        System.out.println("ERES EL JUGADOR 1!");
+                        inicio = true;
+                    }
                     String tmpPosicion = introducirPosicion();
                     out.println(tmpPosicion);
                 } else if (mensajeDelServidor.startsWith("espera")){
+                    if (inicio == false){
+                        System.out.println("ERES EL JUGADOR 2!");
+                        inicio = true;
+                    }
                     System.out.println("Tu rival está haciendo su jugada, espera a tu turno...");
-                }  else if (mensajeDelServidor.startsWith("MATRICES-")){
+                } else if (mensajeDelServidor.startsWith("MATRICES-")){
                     tablero.stringToMatrices(mensajeDelServidor);
+                } else if (mensajeDelServidor.startsWith("ganador")){
+                    System.out.println("HAS GANADO!!!");
+                    break;
+                } else if (mensajeDelServidor.startsWith("perdedor")){
+                    System.out.println("HAS PERDIDO :C");
+                    break;
                 }
             }
         }

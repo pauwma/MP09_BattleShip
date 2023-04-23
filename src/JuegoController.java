@@ -125,16 +125,20 @@ public class JuegoController {
 
 
     // Método para verificar si todos los barcos en un tablero han sido hundidos
-    private boolean todosLosBarcosHundidos(int[][] tablero) {
+    public boolean comprobarGanador() {
+        // Obtiene el tablero del jugador contrario
+        int[][] tablero = turno ? tableroJ2 : tableroJ1;
+
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
-                if (tablero[i][j] == 1) {
+                if (tablero[i][j] == 2) {
                     return false; // Aún queda al menos un barco
                 }
             }
         }
         return true; // No se encontraron barcos, todos han sido hundidos
     }
+
 
     public void setTurno(boolean randomTurn) {
         turno = randomTurn;
