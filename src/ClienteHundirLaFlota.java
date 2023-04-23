@@ -40,6 +40,8 @@ public class ClienteHundirLaFlota {
                     out.println(tmpPosicion);
                 } else if (mensajeDelServidor.startsWith("espera")){
                     System.out.println("Tu rival está haciendo su jugada, espera a tu turno...");
+                }  else if (mensajeDelServidor.startsWith("MATRICES-")){
+                    tablero.stringToMatrices(mensajeDelServidor);
                 }
             }
         }
@@ -47,14 +49,35 @@ public class ClienteHundirLaFlota {
 
     public static String introducirPosicion(){
         Scanner stdIn = new Scanner(System.in);
-        System.out.println("Introduce una posición de la A a la J:");
-        String letra = stdIn.nextLine().toUpperCase();
-        int posHorizontal = letra.charAt(0) - 65;
+        String letra;
+        int posHorizontal;
+        int posVertical;
+        String posicion = null;
+        boolean isValidInput = false;
 
-        System.out.println("Introduce una posición de 0 a 9:");
-        int posVertical = Integer.parseInt(stdIn.nextLine());
+        while (!isValidInput) {
+            try {
+                System.out.println("Introduce una posición de la A a la J:");
+                letra = stdIn.nextLine().toUpperCase();
+                if (letra.length() != 1 || letra.charAt(0) < 'A' || letra.charAt(0) > 'J') {
+                    throw new IllegalArgumentException("La posición debe ser una letra entre A y J.");
+                }
+                posHorizontal = letra.charAt(0) - 65;
 
-        String posicion = "POS-" + posHorizontal + "" + posVertical;
+                System.out.println("Introduce una posición de 0 a 9:");
+                posVertical = Integer.parseInt(stdIn.nextLine());
+                if (posVertical < 0 || posVertical > 9) {
+                    throw new IllegalArgumentException("La posición debe ser un número entre 0 y 9.");
+                }
+
+                posicion = "POS-" + posHorizontal + "" + posVertical;
+                isValidInput = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Debe ingresar un número entre 0 y 9.");
+            } catch (IllegalArgumentException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
         return posicion;
     }
 }

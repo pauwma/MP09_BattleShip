@@ -48,8 +48,43 @@ public class Tablero {
         System.out.println("     0   1   2   3   4   5   6   7   8   9    ");
     }
 
+    public void stringToMatrices(String input) {
+        String data = input.substring(9); // Excluir "MATRICES-" del principio
+
+        int rows = 10;
+        int cols = 10;
+        int totalLength = rows * cols;
+
+        int[][] matriz1 = new int[rows][cols];
+        int[][] matriz2 = new int[rows][cols];
+
+        for (int i = 0; i < data.length(); i++) {
+            char ch = data.charAt(i);
+            int val = ch == 'X' ? -1 : Character.getNumericValue(ch);
+
+            if (i < totalLength) {
+                // Llenar matriz1
+                int row = i / cols;
+                int col = i % cols;
+                matriz1[row][col] = val;
+            } else {
+                // Llenar matriz2
+                int newIndex = i - totalLength;
+                int row = newIndex / cols;
+                int col = newIndex % cols;
+                matriz2[row][col] = val;
+            }
+        }
+
+        mostrarMatrices(matriz1, matriz2);
+    }
+
+
     /**
      * Muestra el tablero de dos matrices.
+     *
+     * -1 = Tocado / 0 = Nada / 1 = Agua / 2 = Barco
+     *
      * @param matriz1
      * @param matriz2
      */
@@ -193,6 +228,33 @@ public class Tablero {
 
     public int[][] getTablero() {
         return tablero;
+    }
+
+    public String matrizToString(int[][] matriz) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz[i].length; j++) {
+                sb.append(matriz[i][j]);
+            }
+        }
+        String enviar = "MATRIZ-" + sb.toString();
+        return enviar;
+    }
+
+    public int[][] stringToMatriz(String str) {
+        if (str.length() != 100) {
+            throw new IllegalArgumentException("La longitud de la cadena debe ser 100.");
+        }
+
+        int[][] matriz = new int[10][10];
+        int index = 0;
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                matriz[i][j] = Character.getNumericValue(str.charAt(index));
+                index++;
+            }
+        }
+        return matriz;
     }
 }
 

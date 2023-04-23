@@ -179,16 +179,10 @@ public class ServerHundirLaFlota {
 
     public static void gameLoop() throws InterruptedException {
         juego.randomTurno();
-        int currentPlayer = 0;
 
         while (!juego.isGameOver()) {
 
-            if (juego.isTurno()){
-                currentPlayer = 0;
-            } else {
-                currentPlayer = 1;
-            }
-
+            int currentPlayer = juego.isTurno() ? 0 : 1;
             String playerResponse = clients.get(currentPlayer).waitForResponse();
 
             if (playerResponse != null && playerResponse.length() == 2) {
@@ -197,14 +191,19 @@ public class ServerHundirLaFlota {
                 if (validMove) {
                     // Cambiar el turno solo si el movimiento es válido
                     juego.nextTurno();
+
+                    // ? Devolver tablas
+                    String tableros = juego.matricesToString(juego.getTableroJ1(), juego.getTableroJ2());
+                    clients.get(0).sendMessage(tableros);
+                    clients.get(1).sendMessage(tableros);
+
+                    // ? Enviar turnos
                     clients.get(0).sendMessage(juego.isTurno() ? "turno" : "espera");
                     clients.get(1).sendMessage(juego.isTurno() ? "espera" : "turno");
                     Thread.sleep(1000);
-                } else {
-                    // Si el movimiento no es válido, informar al jugador actual para que realice otro intento
-                    clients.get(currentPlayer).sendMessage("intentar_nuevamente");
                 }
             }
         }
     }
+
 }

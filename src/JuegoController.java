@@ -44,7 +44,8 @@ public class JuegoController {
                 sb.append(matriz[i][j]);
             }
         }
-        return sb.toString();
+        String enviar = "MATRIZ-" + sb.toString();
+        return enviar;
     }
 
     public int[][] stringToMatriz(String str) {
@@ -63,6 +64,33 @@ public class JuegoController {
         return matriz;
     }
 
+    public String matricesToString(int[][] matriz1, int[][] matriz2) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("MATRICES-");
+
+        for (int i = 0; i < matriz1.length; i++) {
+            for (int j = 0; j < matriz1[i].length; j++) {
+                if (matriz1[i][j] == -1) {
+                    sb.append("X"); // Usar 'X' para representar -1
+                } else {
+                    sb.append(matriz1[i][j]);
+                }
+            }
+        }
+
+        for (int i = 0; i < matriz2.length; i++) {
+            for (int j = 0; j < matriz2[i].length; j++) {
+                if (matriz2[i][j] == -1) {
+                    sb.append("X"); // Usar 'X' para representar -1
+                } else {
+                    sb.append(matriz2[i][j]);
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
     public int[][] getTableroJ1() {
         return tableroJ1;
     }
@@ -76,36 +104,25 @@ public class JuegoController {
     }
 
     // Método para procesar la entrada de posición
-    public boolean procesarPosicion(String tmpPos) {
-        /*
-        int x = Character.getNumericValue(tmpPos.charAt(0));
-        int y = Character.getNumericValue(tmpPos.charAt(1));
+    public boolean procesarPosicion(String posicion) {
+        int x = Character.getNumericValue(posicion.charAt(0));
+        int y = Character.getNumericValue(posicion.charAt(1));
 
-        // Asumiendo que la posición es 0-indexada y la entrada es válida (dentro del rango 0-9)
-        int[][] tableroActual = turno ? tableroJ1 : tableroJ2;
-        int[][] tableroOponente = turno ? tableroJ2 : tableroJ1;
+        // Obtiene el tablero del jugador contrario
+        int[][] tableroActual = turno ? tableroJ2 : tableroJ1;
 
-        // Comprobar si la posición es válida y no ha sido atacada antes
-        if (tableroOponente[x][y] != -1) {
-            // Atacar la posición
-            int resultado = tableroOponente[x][y];
-            tableroOponente[x][y] = -1; // Marcar como atacado
-
-            // Actualizar el tablero del jugador actual con el resultado
-            tableroActual[x][y] = resultado == 0 ? -1 : 2; // -1: Agua, 2: Barco hundido
-
-            // Puedes agregar más lógica aquí para verificar si el oponente ha perdido todos sus barcos y establecer sus barcos y establecer el ganador si es necesario.
-            if (resultado == 1) {
-                if (todosLosBarcosHundidos(tableroOponente)) {
-                    setGanador(true);
-                }
-                return true; // Retorna true si se hundió un barco
-            }
+        // Si hay un barco en la posición marcada, modifica esa posición a -1 (tocado)
+        if (tableroActual[x][y] == 2) {
+            tableroActual[x][y] = -1;
+        } else if (tableroActual[x][y] != -1){
+            // Si no había un barco, márcalo con un 1 (agua)
+            tableroActual[x][y] = 1;
         }
-        return false; // Retorna false si no se hundió un barco o la posición ya ha sido atacada
-         */
+
         return true;
     }
+
+
 
     // Método para verificar si todos los barcos en un tablero han sido hundidos
     private boolean todosLosBarcosHundidos(int[][] tablero) {
