@@ -27,7 +27,7 @@ public class ServerHundirLaFlota {
 
     public ServerHundirLaFlota(){}
 
-    public static void main(String[] args) {
+    public void inicio() {
         juego = new JuegoController(); // ? Inicializar el objeto JuegoController
         ExecutorService executorService = Executors.newFixedThreadPool(MAX_USERS);
 

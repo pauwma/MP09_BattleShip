@@ -122,8 +122,6 @@ public class JuegoController {
         return true;
     }
 
-
-
     // Método para verificar si todos los barcos en un tablero han sido hundidos
     public boolean comprobarGanador() {
         // Obtiene el tablero del jugador contrario

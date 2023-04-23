@@ -100,4 +100,13 @@ public class ClienteHundirLaFlota {
         }
         return posicion;
     }
+
+    public static void main(String[] args) {
+        ClienteHundirLaFlota clienteHundirLaFlota = new ClienteHundirLaFlota("localhost", 12345);
+        try {
+            clienteHundirLaFlota.inicio();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
