@@ -14,13 +14,13 @@ public class ClienteHundirLaFlota {
         try (Socket socket = new Socket(HOST, PUERTO)) {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Tablero tablero = new Tablero();
 
             String mensajeDelServidor;
             while ((mensajeDelServidor = in.readLine()) != null) {
                 System.out.println(mensajeDelServidor);
 
                 if (mensajeDelServidor.startsWith("inicio")) {
-                    Tablero tablero = new Tablero();
                     System.out.println("Coloca tus barcos:");
                     tablero.colocarBarcos();
                     int[][] matriz = tablero.getTablero();

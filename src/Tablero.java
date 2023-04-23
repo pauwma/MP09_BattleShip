@@ -90,7 +90,7 @@ public class Tablero {
      */
     public void mostrarMatrices(int[][] matriz1, int[][] matriz2) {
         String[] letras = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
-        String[] simbolos = {"   ", " ░ ", " █ "};
+        String[] simbolos = {" █ ", "   ", " ░ ", "   "};
 
         System.out.println("                   JUGADOR 1                   │                   JUGADOR 2");
         System.out.println("   ┏━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┓   │   ┏━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┯━━━┓");
@@ -98,23 +98,26 @@ public class Tablero {
         for (int i = 0; i < 10; i++) {
             System.out.print(" " + letras[i] + " ┃");
             for (int j = 0; j < 10; j++) {
-                System.out.print(simbolos[matriz1[i][j]]);
+                int val = matriz1[i][j];
+                String simbolo = simbolos[val + 1];
+                System.out.print(simbolo);
                 if (j < 9) {
                     System.out.print("│");
                 } else {
                     System.out.print("┃");
                 }
             }
-            System.out.print("   │  " + " ┃");
+            System.out.print("   │ " + letras[i] + " ┃");
             for (int j = 0; j < 10; j++) {
-                System.out.print(simbolos[matriz2[i][j]]);
+                int val = matriz2[i][j];
+                String simbolo = simbolos[val + 1];
+                System.out.print(simbolo);
                 if (j < 9) {
                     System.out.print("│");
                 } else {
                     System.out.print("┃");
                 }
             }
-            System.out.print(" " + letras[i]);
             System.out.println();
             if (i < 9) {
                 System.out.println("   ┠───┼───┼───┼───┼───┼───┼───┼───┼───┼───┨   │   ┠───┼───┼───┼───┼───┼───┼───┼───┼───┼───┨");
@@ -124,6 +127,8 @@ public class Tablero {
         }
         System.out.println("     0   1   2   3   4   5   6   7   8   9     │     0   1   2   3   4   5   6   7   8   9    ");
     }
+
+
 
     public void colocarBarcos() {
         Scanner scanner = new Scanner(System.in);

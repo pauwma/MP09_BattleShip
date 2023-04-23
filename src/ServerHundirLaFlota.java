@@ -79,7 +79,9 @@ public class ServerHundirLaFlota {
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     String processedData = processData(inputLine);
-                    System.out.println(processedData);
+                    if(processedData !=null){
+                        System.out.println(processedData);
+                    }
                     synchronized (this) {
                         setResponse(processedData);
                         notify();
@@ -116,7 +118,6 @@ public class ServerHundirLaFlota {
             response = null;
             return result;
         }
-
     }
 
     public static String processData(String data) {
@@ -146,7 +147,7 @@ public class ServerHundirLaFlota {
                     startGameLoop();
                 }
             }
-            return "Tablero del jugador " + tmpJugador + " almacenado.";
+            return null;
         } else if (data.startsWith("POS-")){
             String posData = data.substring(4); // ? Eliminar "POS-" del comienzo
             return posData;
