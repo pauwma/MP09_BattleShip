@@ -165,6 +165,8 @@ public class ServerHundirLaFlota {
         juego.setTurno(randomTurn);
         clients.get(0).sendMessage(randomTurn ? "turno" : "espera");
         clients.get(1).sendMessage(randomTurn ? "espera" : "turno");
+        juego.setTurno(!randomTurn); // Cambiar el turno en el controlador de juego
+
 
         new Thread(() -> gameLoop()).start();
     }
@@ -183,7 +185,7 @@ public class ServerHundirLaFlota {
 
             String playerResponse = clients.get(currentPlayer).waitForResponse();
 
-            if (playerResponse != null) {
+            if (playerResponse != null && playerResponse.length() == 2) {
                 boolean validMove = juego.procesarPosicion(playerResponse);
 
                 if (validMove) {
@@ -198,7 +200,4 @@ public class ServerHundirLaFlota {
             }
         }
     }
-
-
-
 }
